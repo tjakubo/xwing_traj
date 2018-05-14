@@ -1,23 +1,25 @@
-function traj = turn(baseSize, resolution, speed)
+function [traj, length] = turn(baseSize, resolution, speed)
     % initial straight part
-    traj = init(baseSize, resolution); 
+    initTraj = init(baseSize, resolution); 
     % curved turn trajectory path
     turnRadius = [35 62.5 90];
     radius = turnRadius(speed); 
     len = (2*pi*radius)/4;     
     numSteps = ceil(len/resolution); 
     angleStep = (pi/2)/numSteps;
-    offset = length(traj);
-    traj = [traj; zeros( numSteps,2)];
-    for k=1:1:(numSteps)
+    offset = initTraj(end, :);
+    moveTraj = zeros( numSteps,2);
+    for k=1:(numSteps)
        angle = k*angleStep;
-       traj(k+offset,:) = [((-1*cos(angle))+1) sin(angle)].*radius;
+       moveTraj(k,:) = [((-1*cos(angle))+1) sin(angle)].*radius + offset;
     end
     % final straight path
     finishSteps = baseSize/resolution;
-    offset = length(traj);
-    traj = [traj; zeros(finishSteps, 2)];
-    for k=1:1:(finishSteps)
-        traj(k+offset, :) = [radius+(k*resolution) radius];
+    offset = moveTraj(end, :);
+    finTraj = zeros(finishSteps, 2);
+    for k=1:(finishSteps)
+        finTraj(k, :) = [k*resolution 0] + offset;
     end
+    traj = [initTraj; moveTraj; finTraj];
+    length = baseSize + len;
 end

@@ -1,14 +1,16 @@
-function traj = straight(baseSize, resolution, speed)
+function [traj, length] = straight(baseSize, resolution, speed)
     % initial straight part
-    traj = init(baseSize, resolution);
+    initTraj = init(baseSize, resolution);
     % trajectory path + final straight
     strLen = [40 80 120 160 200];
     len = strLen(speed)+baseSize;
     stepNum = ceil(len/resolution);
     step = len/stepNum;
-    offset = length(traj);
-    traj = traj; zeros(2, stepNum)];
-    for k=1:1:stepNum
-        
+    offset = initTraj(end, :);
+    moveTraj = zeros(stepNum, 2);
+    for k=1:stepNum
+       moveTraj(k,:) = offset + [0 step*k];
     end
+    traj = [initTraj; moveTraj];
+    length = len + baseSize;
 end
